@@ -15,7 +15,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-          token: ${{ secrets.GH_PAT }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -55,7 +54,7 @@ jobs:
           server-dir: ${{ secrets.FTP_CMS_STAGING_DIR }}
           
       - name: Notify on success
-        if: success()
+        if: success() && env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
@@ -63,10 +62,10 @@ jobs:
               "text": "✅ Staging deployment successful! Sites are live at ${{ secrets.STAGING_URL }} and ${{ secrets.CMS_STAGING_URL }}"
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL || '' }}
           
       - name: Notify on failure
-        if: failure()
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
@@ -74,4 +73,4 @@ jobs:
               "text": "❌ Staging deployment failed! Check the logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL || '' }} 
