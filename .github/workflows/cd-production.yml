@@ -34,8 +34,20 @@ jobs:
 
       - name: Build main site and CMS
         run: npm run build:all
+        
+      - name: Validate FTP Configuration
+        id: validate-ftp
+        run: |
+          if [ -z "${{ secrets.FTP_SERVER }}" ] || [ -z "${{ secrets.FTP_USERNAME }}" ] || [ -z "${{ secrets.FTP_PASSWORD }}" ]; then
+            echo "::warning::Missing FTP configuration. Skipping deployment."
+            echo "skip_deployment=true" >> $GITHUB_OUTPUT
+          else
+            echo "FTP configuration is valid."
+            echo "skip_deployment=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Deploy main site to Hostinger via FTP
+        if: steps.validate-ftp.outputs.skip_deployment != 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -45,6 +57,7 @@ jobs:
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
           
       - name: Deploy CMS to Hostinger via FTP
+        if: steps.validate-ftp.outputs.skip_deployment != 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
