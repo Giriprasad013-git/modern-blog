@@ -35,14 +35,14 @@ jobs:
       - name: Build main site and CMS
         run: npm run build:all
         
-      - name: Validate FTP Configuration
-        id: validate-ftp
+      - name: Validate SFTP Configuration
+        id: validate-sftp
         run: |
           if [ -z "$FTP_SERVER" ] || [ -z "$FTP_USERNAME" ] || [ -z "$FTP_PASSWORD" ]; then
-            echo "::warning::Missing FTP configuration. Skipping deployment."
+            echo "::warning::Missing SFTP configuration. Skipping deployment."
             echo "skip_deployment=true" >> $GITHUB_OUTPUT
           else
-            echo "FTP configuration is valid."
+            echo "SFTP configuration is valid."
             echo "skip_deployment=false" >> $GITHUB_OUTPUT
           fi
         env:
@@ -50,25 +50,25 @@ jobs:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
 
-      - name: Deploy main site to Hostinger via FTP
-        if: steps.validate-ftp.outputs.skip_deployment != 'true'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Deploy main site to Hostinger via SFTP
+        if: steps.validate-sftp.outputs.skip_deployment != 'true'
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          local_path: ./dist/*
+          remote_path: ${{ secrets.FTP_SERVER_DIR }}
           
-      - name: Deploy CMS to Hostinger via FTP
-        if: steps.validate-ftp.outputs.skip_deployment != 'true'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Deploy CMS to Hostinger via SFTP
+        if: steps.validate-sftp.outputs.skip_deployment != 'true'
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist-cms/
-          server-dir: ${{ secrets.FTP_CMS_DIR }}
+          local_path: ./dist-cms/*
+          remote_path: ${{ secrets.FTP_CMS_DIR }}
           
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
