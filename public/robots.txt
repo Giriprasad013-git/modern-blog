@@ -1,0 +1,26 @@
+# Fast Facts Blog - Robot Rules
+User-agent: *
+Allow: /
+
+# Prevent duplicate content issues
+Disallow: /post/
+Disallow: /cms
+Disallow: /cms/*
+
+# Sitemap
+Sitemap: https://your-domain.com/sitemap.xml
+
+# Crawl delay to prevent server overload
+Crawl-delay: 5
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
