@@ -5,7 +5,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/modern-blog.git"
+    "url": "https://github.com/Giriprasad013-git/modern-blog.git"
   },
   "scripts": {
     "dev": "vite",
@@ -43,7 +43,8 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
-    "@sentry/react": "^7.101.1",
+    "@sentry/browser": "^9.30.0",
+    "@sentry/react": "^7.120.3",
     "@supabase/supabase-js": "^2.49.8",
     "@tanstack/react-query": "^5.56.2",
     "@types/uuid": "^10.0.0",

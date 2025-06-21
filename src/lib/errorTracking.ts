@@ -11,7 +11,9 @@ export function initErrorTracking(): void {
     Sentry.init({
       dsn: import.meta.env.VITE_SENTRY_DSN,
       integrations: [
-        new Sentry.BrowserTracing(),
+        new Sentry.BrowserTracing({
+          tracePropagationTargets: ["https://fastandfacts.com", /^\//, /^https:\/\/api\.fastandfacts\.com\//],
+        }),
         new Sentry.Replay(),
       ],
       // Performance monitoring
@@ -21,6 +23,11 @@ export function initErrorTracking(): void {
       replaysOnErrorSampleRate: 1.0, // Sample rate for errors - 100%
       environment: import.meta.env.MODE,
       release: import.meta.env.VITE_APP_VERSION || 'dev',
+      allowUrls: [
+        /https?:\/\/fastandfacts\.com/,
+        /https?:\/\/staging\.fastandfacts\.com/,
+        /localhost/,
+      ],
     });
   }
 }

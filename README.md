@@ -1,6 +1,6 @@
 # Modern Blog
 
-A feature-rich blog platform built with React, TypeScript, and Supabase.
+A feature-rich blog platform built with React, TypeScript, and Supabase, deployed at [fastandfacts.com](https://fastandfacts.com).
 
 ## Features
 
@@ -12,7 +12,7 @@ A feature-rich blog platform built with React, TypeScript, and Supabase.
 - 🔍 **SEO Optimized** - Meta tags, JSON-LD structured data, and dynamic sitemap generation
 - 📊 **Analytics** - Integration with Plausible Analytics
 - 🐞 **Error Tracking** - Integration with Sentry for error monitoring
-- 🚀 **CI/CD** - Automated deployment with GitHub Actions
+- 🚀 **CI/CD** - Automated deployment with GitHub Actions to Hostinger
 
 ## Getting Started
 
@@ -78,10 +78,11 @@ To set up deployment:
    - `SUPABASE_ANON_KEY`
    - `APP_URL`
    - `APP_NAME`
-   - `NETLIFY_AUTH_TOKEN`
-   - `NETLIFY_STAGING_SITE_ID`
-   - `NETLIFY_PRODUCTION_SITE_ID`
-   - `PRODUCTION_DOMAIN`
+   - `FTP_SERVER`
+   - `FTP_USERNAME`
+   - `FTP_PASSWORD`
+   - `FTP_SERVER_DIR`
+   - `FTP_STAGING_DIR`
    - `STAGING_URL`
    - `SLACK_WEBHOOK_URL` (optional)
 

@@ -33,13 +33,14 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to Netlify
-        uses: netlify/actions/cli@master
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_SITE_ID }}
+      - name: Deploy to Hostinger via FTP (Staging)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          args: deploy --dir=dist --prod
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_STAGING_DIR }}
           
       - name: Notify on success
         if: success()

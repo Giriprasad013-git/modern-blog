@@ -50,7 +50,7 @@ export function initAnalytics(): void {
     // Create and append Plausible script
     const script = document.createElement('script');
     script.defer = true;
-    script.dataset.domain = window.location.hostname;
+    script.dataset.domain = import.meta.env.VITE_PLAUSIBLE_DOMAIN || 'fastandfacts.com';
     script.src = 'https://plausible.io/js/script.js';
     
     document.head.appendChild(script);

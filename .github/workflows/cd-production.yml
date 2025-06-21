@@ -33,13 +33,14 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to Netlify
-        uses: netlify/actions/cli@master
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
+      - name: Deploy to Hostinger via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          args: deploy --dir=dist --prod
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
           
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -49,7 +50,7 @@ jobs:
           body: |
             Production deployment from commit ${{ github.sha }}
             
-            [View deployment](https://${{ secrets.PRODUCTION_DOMAIN }})
+            [View deployment](https://fastandfacts.com)
           draft: false
           prerelease: false
           
@@ -59,7 +60,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "🚀 Production deployment successful! Site is live at https://${{ secrets.PRODUCTION_DOMAIN }}"
+              "text": "🚀 Production deployment successful! Site is live at https://fastandfacts.com"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

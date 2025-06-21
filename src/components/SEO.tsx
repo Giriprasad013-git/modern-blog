@@ -15,7 +15,7 @@ interface SEOProps {
 }
 
 const SEO = ({
-  title = "Modern Blog - Latest Insights on Technology, Business & Lifestyle",
+  title = "Fast and Facts - Latest Insights on Technology, Business & Lifestyle",
   description = "Discover the latest insights on technology, business, lifestyle, health, and travel. Expert articles, guides, and trends to keep you informed and inspired.",
   keywords = "blog, technology, business, lifestyle, health, travel, articles, insights",
   image = "/placeholder.svg",
@@ -38,11 +38,11 @@ const SEO = ({
     const websiteData = {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "Modern Blog",
-      "url": import.meta.env.VITE_APP_URL || "https://your-domain.com",
+      "name": "Fast and Facts",
+      "url": import.meta.env.VITE_APP_URL || "https://fastandfacts.com",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": `${import.meta.env.VITE_APP_URL || "https://your-domain.com"}/search?q={search_term_string}`,
+        "target": `${import.meta.env.VITE_APP_URL || "https://fastandfacts.com"}/search?q={search_term_string}`,
         "query-input": "required name=search_term_string"
       }
     };
@@ -60,14 +60,14 @@ const SEO = ({
         "dateModified": formatDate(post.updated_at || post.created_at),
         "author": {
           "@type": "Person",
-          "name": post.author || "Modern Blog Team"
+          "name": post.author || "Fast and Facts Team"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "Modern Blog",
+          "name": "Fast and Facts",
           "logo": {
             "@type": "ImageObject",
-            "url": `${import.meta.env.VITE_APP_URL || "https://your-domain.com"}/logo.png`
+            "url": `${import.meta.env.VITE_APP_URL || "https://fastandfacts.com"}/logo.png`
           }
         },
         "description": post.excerpt || description,
@@ -90,13 +90,13 @@ const SEO = ({
       const categoryData = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
-        "name": `${category} - Modern Blog`,
-        "description": `Articles about ${category} on Modern Blog`,
+        "name": `${category} - Fast and Facts`,
+        "description": `Articles about ${category} on Fast and Facts`,
         "url": url,
         "isPartOf": {
           "@type": "WebSite",
-          "name": "Modern Blog",
-          "url": import.meta.env.VITE_APP_URL || "https://your-domain.com"
+          "name": "Fast and Facts",
+          "url": import.meta.env.VITE_APP_URL || "https://fastandfacts.com"
         }
       };
 
@@ -117,7 +117,7 @@ const SEO = ({
           "@type": "ListItem",
           "position": 1,
           "name": "Home",
-          "item": import.meta.env.VITE_APP_URL || "https://your-domain.com"
+          "item": import.meta.env.VITE_APP_URL || "https://fastandfacts.com"
         }
       ]
     };
@@ -128,7 +128,7 @@ const SEO = ({
         "@type": "ListItem",
         "position": 2,
         "name": category,
-        "item": `${import.meta.env.VITE_APP_URL || "https://your-domain.com"}/category/${category.toLowerCase().replace(/\s+/g, '-')}`
+        "item": `${import.meta.env.VITE_APP_URL || "https://fastandfacts.com"}/category/${category.toLowerCase().replace(/\s+/g, '-')}`
       });
     }
 
@@ -163,14 +163,14 @@ const SEO = ({
       <meta property="og:url" content={url} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={image.startsWith('http') ? image : `${import.meta.env.VITE_APP_URL || ""}${image}`} />
+      <meta property="og:image" content={image.startsWith('http') ? image : `${import.meta.env.VITE_APP_URL || "https://fastandfacts.com"}${image}`} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={url} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image.startsWith('http') ? image : `${import.meta.env.VITE_APP_URL || ""}${image}`} />
+      <meta name="twitter:image" content={image.startsWith('http') ? image : `${import.meta.env.VITE_APP_URL || "https://fastandfacts.com"}${image}`} />
 
       {/* JSON-LD Structured Data */}
       {structuredData.map((data, index) => (

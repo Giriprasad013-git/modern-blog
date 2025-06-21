@@ -1,4 +1,4 @@
-# Fast Facts Blog - Robot Rules
+# Fast and Facts Blog - Robot Rules
 User-agent: *
 Allow: /
 
@@ -8,7 +8,7 @@ Disallow: /cms
 Disallow: /cms/*
 
 # Sitemap
-Sitemap: https://your-domain.com/sitemap.xml
+Sitemap: https://fastandfacts.com/sitemap.xml
 
 # Crawl delay to prevent server overload
 Crawl-delay: 5

@@ -1,4 +1,3 @@
-
 # Fast and Facts - Technical Documentation
 
 ## Project Overview
@@ -155,9 +154,10 @@ npm run preview
 ```
 
 ### Hosting Options
-- **Recommended**: Netlify, Vercel, or Cloudflare Pages
+- **Current**: Hostinger (deployed at fastandfacts.com)
 - Static hosting compatible (SPA mode)
 - Requires environment variables for Supabase
+- CI/CD via GitHub Actions with FTP deployment
 
 ## Security Considerations
 

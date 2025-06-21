@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This document provides instructions for deploying the Modern Blog application using GitHub Actions and Netlify.
+This document provides instructions for deploying the Modern Blog application using GitHub Actions and Hostinger.
 
 ## Setting Up GitHub Repository
 
@@ -29,29 +29,31 @@ For the CI/CD workflows to work properly, you need to set up the following secre
 |-------------|-------------|
 | `SUPABASE_URL` | Your Supabase project URL |
 | `SUPABASE_ANON_KEY` | Your Supabase anonymous key |
-| `APP_URL` | Your application URL (e.g., https://your-domain.com) |
-| `APP_NAME` | Your application name (e.g., "Modern Blog") |
-| `NETLIFY_AUTH_TOKEN` | Your Netlify authentication token |
-| `NETLIFY_STAGING_SITE_ID` | Your Netlify staging site ID |
-| `NETLIFY_PRODUCTION_SITE_ID` | Your Netlify production site ID |
-| `PRODUCTION_DOMAIN` | Your production domain (e.g., your-domain.com) |
-| `STAGING_URL` | Your staging URL (e.g., staging.your-domain.com) |
+| `APP_URL` | Your application URL (e.g., https://fastandfacts.com) |
+| `APP_NAME` | Your application name (e.g., "Fast and Facts") |
+| `FTP_SERVER` | Your Hostinger FTP server address |
+| `FTP_USERNAME` | Your Hostinger FTP username |
+| `FTP_PASSWORD` | Your Hostinger FTP password |
+| `FTP_SERVER_DIR` | Your production directory on Hostinger (e.g., "/") |
+| `FTP_STAGING_DIR` | Your staging directory on Hostinger (e.g., "/staging/") |
+| `STAGING_URL` | Your staging URL (e.g., https://staging.fastandfacts.com) |
 | `SLACK_WEBHOOK_URL` | (Optional) Slack webhook URL for notifications |
 | `SENTRY_DSN` | Your Sentry DSN for error tracking |
 
-## Setting Up Netlify
+## Setting Up Hostinger
 
-1. Create two sites in Netlify:
-   - One for staging
-   - One for production
+1. Create your Hostinger account and set up your domain (fastandfacts.com)
 
-2. Get your site IDs:
-   - Go to Site settings > General > Site details
-   - Copy the API ID (this is your site ID)
+2. Set up FTP access:
+   - Go to your Hostinger control panel
+   - Navigate to Files > FTP Accounts
+   - Create a new FTP account or use the existing one
+   - Note down the FTP server address, username, and password
 
-3. Create a Netlify authentication token:
-   - Go to User settings > Applications > Personal access tokens
-   - Generate a new token with appropriate permissions
+3. (Optional) Create a staging subdomain:
+   - Go to Domains > Subdomains
+   - Create a new subdomain (e.g., staging.fastandfacts.com)
+   - Create a directory for staging deployment
 
 ## Setting Up Supabase
 
@@ -91,15 +93,15 @@ VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # Application Configuration
-VITE_APP_NAME="Modern Blog"
-VITE_APP_URL=https://your-domain.com
+VITE_APP_NAME="Fast and Facts"
+VITE_APP_URL=https://fastandfacts.com
 VITE_APP_VERSION=0.1.0
 
 # Error Tracking (Sentry)
 VITE_SENTRY_DSN=your_sentry_dsn
 
 # Analytics
-VITE_PLAUSIBLE_DOMAIN=your-domain.com
+VITE_PLAUSIBLE_DOMAIN=fastandfacts.com
 ```
 
 ## Deployment Process

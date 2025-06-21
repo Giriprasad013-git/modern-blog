@@ -1,4 +1,3 @@
-
 # Fast and Facts - Project Guide for Non-Technical Users
 
 ## What is This Project?
@@ -102,22 +101,23 @@ Content is managed through Supabase (the database):
 
 ## Publishing Your Site
 
-### Option 1: Netlify (Recommended)
-1. Connect your GitHub repository
-2. Netlify builds and deploys automatically
-3. Free SSL certificate included
-4. Custom domain support
+### Current Setup: Hostinger
+1. The site is deployed at fastandfacts.com
+2. Deployment is automated through GitHub Actions
+3. SSL certificate is included
+4. Domain is already configured
 
-### Option 2: Vercel
-1. Import from GitHub
-2. Automatic deployments
-3. Great performance
-4. Easy custom domains
+### Alternative Options
+1. **Vercel**
+   - Import from GitHub
+   - Automatic deployments
+   - Great performance
+   - Easy custom domains
 
-### Option 3: Cloudflare Pages
-1. Connect to GitHub
-2. Fast global delivery
-3. Free tier available
+2. **Cloudflare Pages**
+   - Connect to GitHub
+   - Fast global delivery
+   - Free tier available
 
 ## Backup and Security
 
@@ -167,10 +167,10 @@ Content is managed through Supabase (the database):
 ## Cost Breakdown
 
 ### Required Services
-- **Hosting**: Free (Netlify/Vercel) or $5-20/month
+- **Hosting**: Hostinger (current provider)
 - **Database**: Free tier Supabase or $25+/month for growth
-- **Domain**: $10-15/year
-- **Total**: Can start completely free, ~$50/year with custom domain
+- **Domain**: $10-15/year (fastandfacts.com already registered)
+- **Total**: ~$50-100/year including domain and hosting
 
 ### Optional Services
 - **Email**: $6/month (Google Workspace)
