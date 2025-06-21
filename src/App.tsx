@@ -8,7 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 import { initAnalytics } from "@/lib/analytics";
 import { initErrorTracking } from "@/lib/errorTracking";
-import AppRouter from "@/components/AppRouter";
+import BlogRouter from "@/components/BlogRouter";
 import "./App.css";
 
 const queryClient = new QueryClient({
@@ -36,7 +36,7 @@ function App() {
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <AppRouter />
+              <BlogRouter />
             </BrowserRouter>
           </AuthProvider>
         </TooltipProvider>

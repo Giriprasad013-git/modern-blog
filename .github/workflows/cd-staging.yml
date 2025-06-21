@@ -30,10 +30,10 @@ jobs:
           echo "VITE_APP_URL=${{ secrets.APP_URL }}" >> .env
           echo "VITE_APP_NAME=${{ secrets.APP_NAME }}" >> .env
 
-      - name: Build project
-        run: npm run build
+      - name: Build main site and CMS
+        run: npm run build:all
 
-      - name: Deploy to Hostinger via FTP (Staging)
+      - name: Deploy main site to Hostinger via FTP (Staging)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -42,13 +42,22 @@ jobs:
           local-dir: ./dist/
           server-dir: ${{ secrets.FTP_STAGING_DIR }}
           
+      - name: Deploy CMS to Hostinger via FTP (Staging)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist-cms/
+          server-dir: ${{ secrets.FTP_CMS_STAGING_DIR }}
+          
       - name: Notify on success
         if: success()
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
             {
-              "text": "✅ Staging deployment successful! Site is live at ${{ secrets.STAGING_URL }}"
+              "text": "✅ Staging deployment successful! Sites are live at ${{ secrets.STAGING_URL }} and ${{ secrets.CMS_STAGING_URL }}"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

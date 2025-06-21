@@ -1,8 +1,39 @@
+import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from "react";
 
-import { useState, useEffect, useCallback } from "react";
+type ThemeContextType = {
+  theme: string;
+  toggleTheme: () => void;
+  setTheme: (theme: "light" | "dark") => void;
+  isDark: boolean;
+  isLight: boolean;
+};
 
-export const useTheme = () => {
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const themeValue = useThemeInternal();
+  
+  return (
+    <ThemeContext.Provider value={themeValue}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export const useTheme = (): ThemeContextType => {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
+};
+
+// Internal hook for theme logic
+const useThemeInternal = () => {
   const [theme, setTheme] = useState<string>(() => {
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined') return 'light';
+    
     // Check localStorage first
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme && (savedTheme === "light" || savedTheme === "dark")) {
@@ -20,6 +51,8 @@ export const useTheme = () => {
 
   // Apply theme to document with smooth transition
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const root = document.documentElement;
     
     // Add transition class for smooth theme switching
@@ -44,6 +77,8 @@ export const useTheme = () => {
   
   // Listen for system preference changes
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     
     const handleChange = (e: MediaQueryListEvent) => {
@@ -69,11 +104,10 @@ export const useTheme = () => {
     setTheme(prevTheme => {
       const newTheme = prevTheme === "light" ? "dark" : "light";
       
-      // Add a subtle animation effect
-      document.documentElement.style.transition = "all 0.3s ease";
-      
-      // Log theme change for analytics
-      console.log(`Theme switched to: ${newTheme}`);
+      if (typeof window !== 'undefined') {
+        // Add a subtle animation effect
+        document.documentElement.style.transition = "all 0.3s ease";
+      }
       
       return newTheme;
     });
@@ -82,7 +116,9 @@ export const useTheme = () => {
   // Auto-save user's theme preference
   const setThemeWithPreference = useCallback((newTheme: "light" | "dark") => {
     setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("theme", newTheme);
+    }
   }, []);
 
   return { 

@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This document provides instructions for deploying the Modern Blog application using GitHub Actions and Hostinger.
+This document provides instructions for deploying the Fast and Facts blog application using GitHub Actions and Hostinger.
 
 ## Setting Up GitHub Repository
 
@@ -34,15 +34,20 @@ For the CI/CD workflows to work properly, you need to set up the following secre
 | `FTP_SERVER` | Your Hostinger FTP server address |
 | `FTP_USERNAME` | Your Hostinger FTP username |
 | `FTP_PASSWORD` | Your Hostinger FTP password |
-| `FTP_SERVER_DIR` | Your production directory on Hostinger (e.g., "/") |
-| `FTP_STAGING_DIR` | Your staging directory on Hostinger (e.g., "/staging/") |
-| `STAGING_URL` | Your staging URL (e.g., https://staging.fastandfacts.com) |
+| `FTP_SERVER_DIR` | Your production directory on Hostinger for the main site (e.g., "/") |
+| `FTP_CMS_DIR` | Your production directory on Hostinger for the CMS (e.g., "/cms/") |
+| `FTP_STAGING_DIR` | Your staging directory on Hostinger for the main site (e.g., "/staging/") |
+| `FTP_CMS_STAGING_DIR` | Your staging directory on Hostinger for the CMS (e.g., "/staging/cms/") |
+| `STAGING_URL` | Your staging URL for the main site (e.g., https://staging.fastandfacts.com) |
+| `CMS_STAGING_URL` | Your staging URL for the CMS (e.g., https://staging-cms.fastandfacts.com) |
 | `SLACK_WEBHOOK_URL` | (Optional) Slack webhook URL for notifications |
 | `SENTRY_DSN` | Your Sentry DSN for error tracking |
 
 ## Setting Up Hostinger
 
-1. Create your Hostinger account and set up your domain (fastandfacts.com)
+1. Create your Hostinger account and set up your domains:
+   - Main site: fastandfacts.com
+   - CMS: cms.fastandfacts.com
 
 2. Set up FTP access:
    - Go to your Hostinger control panel
@@ -50,10 +55,11 @@ For the CI/CD workflows to work properly, you need to set up the following secre
    - Create a new FTP account or use the existing one
    - Note down the FTP server address, username, and password
 
-3. (Optional) Create a staging subdomain:
-   - Go to Domains > Subdomains
-   - Create a new subdomain (e.g., staging.fastandfacts.com)
-   - Create a directory for staging deployment
+3. Create directories for the different deployments:
+   - Main site (production): /home/u749668517/domains/fastandfacts.com/public_html/
+   - CMS (production): /home/u749668517/domains/fastandfacts.com/public_html/cms/
+   - Main site (staging): Create a staging subdomain and directory
+   - CMS (staging): Create a staging-cms subdomain and directory
 
 ## Setting Up Supabase
 
@@ -111,6 +117,23 @@ The CI/CD workflows are configured to:
 1. Run linting and build checks on every push and pull request
 2. Deploy to staging when changes are pushed to the `develop` branch
 3. Deploy to production when changes are pushed to the `main` branch
+
+### Build Process
+
+The project has separate builds for the main site and CMS:
+
+- `npm run build` - Builds only the main site (output to `dist/`)
+- `npm run build:cms` - Builds only the CMS (output to `dist-cms/`)
+- `npm run build:all` - Builds both the main site and CMS
+
+### Deployment Destinations
+
+- Main site (production): https://fastandfacts.com
+- CMS (production): https://cms.fastandfacts.com
+- Main site (staging): https://staging.fastandfacts.com (or your staging URL)
+- CMS (staging): https://staging-cms.fastandfacts.com (or your CMS staging URL)
+
+### Manual Deployment
 
 To manually trigger a deployment:
 

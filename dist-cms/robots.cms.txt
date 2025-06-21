@@ -1,0 +1,25 @@
+# Fast and Facts CMS - Robot Rules
+User-agent: *
+Disallow: /
+
+# Prevent all indexing of the CMS
+Noindex: /
+
+# Explicitly block these bots
+User-agent: Googlebot
+Disallow: /
+
+User-agent: Bingbot
+Disallow: /
+
+User-agent: Slurp
+Disallow: /
+
+User-agent: DuckDuckBot
+Disallow: /
+
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: Yandex
+Disallow: / 

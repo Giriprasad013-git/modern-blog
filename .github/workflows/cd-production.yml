@@ -30,10 +30,10 @@ jobs:
           echo "VITE_APP_URL=${{ secrets.APP_URL }}" >> .env
           echo "VITE_APP_NAME=${{ secrets.APP_NAME }}" >> .env
 
-      - name: Build project
-        run: npm run build
+      - name: Build main site and CMS
+        run: npm run build:all
 
-      - name: Deploy to Hostinger via FTP
+      - name: Deploy main site to Hostinger via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -41,6 +41,15 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          
+      - name: Deploy CMS to Hostinger via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist-cms/
+          server-dir: ${{ secrets.FTP_CMS_DIR }}
           
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -50,7 +59,8 @@ jobs:
           body: |
             Production deployment from commit ${{ github.sha }}
             
-            [View deployment](https://fastandfacts.com)
+            [View main site](https://fastandfacts.com)
+            [View CMS](https://cms.fastandfacts.com)
           draft: false
           prerelease: false
           
@@ -60,7 +70,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "🚀 Production deployment successful! Site is live at https://fastandfacts.com"
+              "text": "🚀 Production deployment successful! Sites are live at https://fastandfacts.com and https://cms.fastandfacts.com"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
