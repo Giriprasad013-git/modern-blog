@@ -1,0 +1,47 @@
+name: Test FTP Connection
+
+on:
+  workflow_dispatch:  # This allows manual triggering from GitHub Actions tab
+
+jobs:
+  test-ftp:
+    name: Test FTP Connection
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Create test files
+        run: |
+          mkdir -p test-files
+          echo "This is a test file to diagnose FTP issues. Time: $(date)" > test-files/test.html
+          echo "<!DOCTYPE html><html><head><title>Test Page</title></head><body><h1>Test Page</h1><p>This is a test page uploaded via GitHub Actions at $(date)</p></body></html>" > test-files/index.html
+          ls -la test-files/
+    
+      - name: Try root directory upload
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./test-files/
+          server-dir: /
+          dangerous-clean-slate: false
+      
+      - name: Try public_html upload
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./test-files/
+          server-dir: /public_html/
+          dangerous-clean-slate: false
+          
+      - name: Try direct staging upload
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./test-files/
+          server-dir: /public_html/staging/
+          dangerous-clean-slate: false 
