@@ -35,14 +35,40 @@ jobs:
       - name: Build main site and CMS
         run: npm run build:all
         
-      # Debug info for FTP paths
-      - name: Debug FTP configuration
+      # Enhanced debug info for FTP paths
+      - name: Validate FTP path format
         run: |
-          echo "FTP Server: $FTP_SERVER"
-          echo "Main site staging directory: $FTP_STAGING_DIR"
-          echo "CMS staging directory: $FTP_CMS_STAGING_DIR"
+          echo "Checking FTP path formats..."
+          
+          # Check if paths start with /
+          if [[ ! "$FTP_STAGING_DIR" == /* ]]; then
+            echo "WARNING: FTP_STAGING_DIR should start with a forward slash (/)"
+          fi
+          
+          if [[ ! "$FTP_CMS_STAGING_DIR" == /* ]]; then
+            echo "WARNING: FTP_CMS_STAGING_DIR should start with a forward slash (/)"
+          fi
+          
+          # Check if paths end with /
+          if [[ ! "$FTP_STAGING_DIR" == */ ]]; then
+            echo "WARNING: FTP_STAGING_DIR should end with a forward slash (/)"
+          fi
+          
+          if [[ ! "$FTP_CMS_STAGING_DIR" == */ ]]; then
+            echo "WARNING: FTP_CMS_STAGING_DIR should end with a forward slash (/)"
+          fi
+          
+          # Check if public_html is included
+          if [[ ! "$FTP_STAGING_DIR" == *public_html* ]]; then
+            echo "NOTE: FTP_STAGING_DIR may need to include 'public_html' for most hosting providers"
+          fi
+          
+          if [[ ! "$FTP_CMS_STAGING_DIR" == *public_html* ]]; then
+            echo "NOTE: FTP_CMS_STAGING_DIR may need to include 'public_html' for most hosting providers"
+          fi
+          
+          echo "Path format check complete."
         env:
-          FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_STAGING_DIR: ${{ secrets.FTP_STAGING_DIR }}
           FTP_CMS_STAGING_DIR: ${{ secrets.FTP_CMS_STAGING_DIR }}
         
