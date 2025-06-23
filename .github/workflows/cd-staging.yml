@@ -35,6 +35,17 @@ jobs:
       - name: Build main site and CMS
         run: npm run build:all
         
+      # Debug info for FTP paths
+      - name: Debug FTP configuration
+        run: |
+          echo "FTP Server: $FTP_SERVER"
+          echo "Main site staging directory: $FTP_STAGING_DIR"
+          echo "CMS staging directory: $FTP_CMS_STAGING_DIR"
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_STAGING_DIR: ${{ secrets.FTP_STAGING_DIR }}
+          FTP_CMS_STAGING_DIR: ${{ secrets.FTP_CMS_STAGING_DIR }}
+        
       - name: Validate FTP Configuration
         id: validate-sftp
         run: |
@@ -59,6 +70,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
           server-dir: ${{ secrets.FTP_STAGING_DIR }}
+          dangerous-clean-slate: false
           
       - name: Deploy CMS to Hostinger via FTP (Staging)
         if: steps.validate-sftp.outputs.skip_deployment != 'true'
@@ -69,6 +81,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist-cms/
           server-dir: ${{ secrets.FTP_CMS_STAGING_DIR }}
+          dangerous-clean-slate: false
           
       - name: Notify on success
         if: success() && env.SLACK_WEBHOOK_URL != ''
