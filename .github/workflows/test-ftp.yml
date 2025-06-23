@@ -1,8 +1,9 @@
 name: Test FTP Connection
 
 on:
-  workflow_dispatch:  # This allows manual triggering from GitHub Actions tab
-
+    push:
+      branches: [ develop ]
+  
 jobs:
   test-ftp:
     name: Test FTP Connection
