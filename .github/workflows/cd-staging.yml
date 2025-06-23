@@ -35,14 +35,14 @@ jobs:
       - name: Build main site and CMS
         run: npm run build:all
         
-      - name: Validate SFTP Configuration
+      - name: Validate FTP Configuration
         id: validate-sftp
         run: |
           if [ -z "$FTP_SERVER" ] || [ -z "$FTP_USERNAME" ] || [ -z "$FTP_PASSWORD" ]; then
-            echo "::warning::Missing SFTP configuration. Skipping deployment."
+            echo "::warning::Missing FTP configuration. Skipping deployment."
             echo "skip_deployment=true" >> $GITHUB_OUTPUT
           else
-            echo "SFTP configuration is valid."
+            echo "FTP configuration is valid."
             echo "skip_deployment=false" >> $GITHUB_OUTPUT
           fi
         env:
@@ -50,25 +50,25 @@ jobs:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
 
-      - name: Deploy main site to Hostinger via SFTP (Staging)
+      - name: Deploy main site to Hostinger via FTP (Staging)
         if: steps.validate-sftp.outputs.skip_deployment != 'true'
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local_path: ./dist/*
-          remote_path: ${{ secrets.FTP_STAGING_DIR }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_STAGING_DIR }}
           
-      - name: Deploy CMS to Hostinger via SFTP (Staging)
+      - name: Deploy CMS to Hostinger via FTP (Staging)
         if: steps.validate-sftp.outputs.skip_deployment != 'true'
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local_path: ./dist-cms/*
-          remote_path: ${{ secrets.FTP_CMS_STAGING_DIR }}
+          local-dir: ./dist-cms/
+          server-dir: ${{ secrets.FTP_CMS_STAGING_DIR }}
           
       - name: Notify on success
         if: success() && env.SLACK_WEBHOOK_URL != ''
