@@ -5,7 +5,7 @@ This document provides instructions for deploying the Fast and Facts blog applic
 ## Setting Up GitHub Repository
 
 1. Create a new GitHub repository
-2. Push your code to the repository:
+2. Push your code to the repository: 
    ```bash
    # Using the setup script
    ./setup-remote.ps1 -Username "yourusername" -RepoName "modern-blog"
