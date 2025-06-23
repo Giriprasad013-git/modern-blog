@@ -16,7 +16,7 @@ This document provides instructions for deploying the Fast and Facts blog applic
    git push -u origin develop
    ```
 
-## Setting Up GitHub Secrets
+## Setting Up GitHub Secrets 
 
 For the CI/CD workflows to work properly, you need to set up the following secrets in your GitHub repository:
 
