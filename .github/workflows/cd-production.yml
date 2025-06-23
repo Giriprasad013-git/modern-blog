@@ -35,61 +35,18 @@ jobs:
       - name: Build main site and CMS
         run: npm run build:all
         
-      # Add a file to track deployment
-      - name: Create deployment marker file
+      # Create a simple file to verify deployment
+      - name: Create verification file
         run: |
-          echo "Deployment timestamp: $(date)" > ./dist/deployment-marker.txt
-          echo "GitHub Run ID: ${{ github.run_id }}" >> ./dist/deployment-marker.txt
-          echo "Deployed branch: ${{ github.ref_name }}" >> ./dist/deployment-marker.txt
-          
-          echo "Deployment timestamp: $(date)" > ./dist-cms/deployment-marker.txt
-          echo "GitHub Run ID: ${{ github.run_id }}" >> ./dist-cms/deployment-marker.txt
-          echo "Deployed branch: ${{ github.ref_name }}" >> ./dist-cms/deployment-marker.txt
-          
-          # List files for debugging
-          echo "Files in dist directory:"
-          ls -la ./dist/
-          echo "Files in dist/assets directory:"
-          ls -la ./dist/assets/
+          echo "<!DOCTYPE html><html><head><title>Deployment Verification</title></head><body><h1>Deployment Successful!</h1><p>This file confirms the deployment worked. Deployed at: $(date)</p></body></html>" > ./dist/verify.html
+          echo "<!DOCTYPE html><html><head><title>CMS Deployment Verification</title></head><body><h1>CMS Deployment Successful!</h1><p>This file confirms the CMS deployment worked. Deployed at: $(date)</p></body></html>" > ./dist-cms/verify.html
         
       # Enhanced debug info for FTP paths
       - name: Validate FTP path format
         run: |
-          echo "Checking FTP path formats..."
-          
-          # Check if paths start with /
-          if [[ ! "$FTP_SERVER_DIR" == /* ]]; then
-            echo "WARNING: FTP_SERVER_DIR should start with a forward slash (/)"
-          fi
-          
-          if [[ ! "$FTP_CMS_DIR" == /* ]]; then
-            echo "WARNING: FTP_CMS_DIR should start with a forward slash (/)"
-          fi
-          
-          # Check if paths end with /
-          if [[ ! "$FTP_SERVER_DIR" == */ ]]; then
-            echo "WARNING: FTP_SERVER_DIR should end with a forward slash (/)"
-          fi
-          
-          if [[ ! "$FTP_CMS_DIR" == */ ]]; then
-            echo "WARNING: FTP_CMS_DIR should end with a forward slash (/)"
-          fi
-          
-          # Check if public_html is included
-          if [[ ! "$FTP_SERVER_DIR" == *public_html* ]]; then
-            echo "NOTE: FTP_SERVER_DIR may need to include 'public_html' for most hosting providers"
-          fi
-          
-          if [[ ! "$FTP_CMS_DIR" == *public_html* ]]; then
-            echo "NOTE: FTP_CMS_DIR may need to include 'public_html' for most hosting providers"
-          fi
-          
-          echo "FTP_SERVER_DIR first character: ${FTP_SERVER_DIR:0:1}"
-          echo "FTP_SERVER_DIR last character: ${FTP_SERVER_DIR: -1}"
-          echo "FTP_CMS_DIR first character: ${FTP_CMS_DIR:0:1}" 
-          echo "FTP_CMS_DIR last character: ${FTP_CMS_DIR: -1}"
-          
-          echo "Path format check complete."
+          echo "Using production FTP paths:"
+          echo "Main site: $FTP_SERVER_DIR"
+          echo "CMS: $FTP_CMS_DIR"
         env:
           FTP_SERVER_DIR: ${{ secrets.FTP_SERVER_DIR }}
           FTP_CMS_DIR: ${{ secrets.FTP_CMS_DIR }}
@@ -117,8 +74,8 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
-          dangerous-clean-slate: true
+          server-dir: /public_html/
+          dangerous-clean-slate: false
           
       - name: Deploy CMS to Hostinger via FTP
         if: steps.validate-sftp.outputs.skip_deployment != 'true'
@@ -128,8 +85,8 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist-cms/
-          server-dir: ${{ secrets.FTP_CMS_DIR }}
-          dangerous-clean-slate: true
+          server-dir: /public_html/cms/
+          dangerous-clean-slate: false
           
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -141,6 +98,10 @@ jobs:
             
             [View main site](https://fastandfacts.com)
             [View CMS](https://cms.fastandfacts.com)
+            
+            Verify deployment:
+            - [Main site verification](https://fastandfacts.com/verify.html)
+            - [CMS verification](https://cms.fastandfacts.com/verify.html)
           draft: false
           prerelease: false
           

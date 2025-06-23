@@ -35,64 +35,18 @@ jobs:
       - name: Build main site and CMS
         run: npm run build:all
         
-      # Add a file to track deployment
-      - name: Create deployment marker file
+      # Create a simple file to verify deployment
+      - name: Create verification file
         run: |
-          echo "Deployment timestamp: $(date)" > ./dist/deployment-marker.txt
-          echo "GitHub Run ID: ${{ github.run_id }}" >> ./dist/deployment-marker.txt
-          echo "Deployed branch: ${{ github.ref_name }}" >> ./dist/deployment-marker.txt
-          
-          echo "Deployment timestamp: $(date)" > ./dist-cms/deployment-marker.txt
-          echo "GitHub Run ID: ${{ github.run_id }}" >> ./dist-cms/deployment-marker.txt
-          echo "Deployed branch: ${{ github.ref_name }}" >> ./dist-cms/deployment-marker.txt
-          
-          # List files for debugging
-          echo "Files in dist directory:"
-          ls -la ./dist/
-          echo "Files in dist/assets directory:"
-          ls -la ./dist/assets/
+          echo "<!DOCTYPE html><html><head><title>Staging Verification</title></head><body><h1>Staging Deployment Successful!</h1><p>This file confirms the staging deployment worked. Deployed at: $(date)</p></body></html>" > ./dist/verify.html
+          echo "<!DOCTYPE html><html><head><title>CMS Staging Verification</title></head><body><h1>CMS Staging Deployment Successful!</h1><p>This file confirms the CMS staging deployment worked. Deployed at: $(date)</p></body></html>" > ./dist-cms/verify.html
         
       # Enhanced debug info for FTP paths
       - name: Validate FTP path format
         run: |
-          echo "Checking FTP path formats..."
-          
-          # Check if paths start with /
-          if [[ ! "$FTP_STAGING_DIR" == /* ]]; then
-            echo "WARNING: FTP_STAGING_DIR should start with a forward slash (/)"
-          fi
-          
-          if [[ ! "$FTP_CMS_STAGING_DIR" == /* ]]; then
-            echo "WARNING: FTP_CMS_STAGING_DIR should start with a forward slash (/)"
-          fi
-          
-          # Check if paths end with /
-          if [[ ! "$FTP_STAGING_DIR" == */ ]]; then
-            echo "WARNING: FTP_STAGING_DIR should end with a forward slash (/)"
-          fi
-          
-          if [[ ! "$FTP_CMS_STAGING_DIR" == */ ]]; then
-            echo "WARNING: FTP_CMS_STAGING_DIR should end with a forward slash (/)"
-          fi
-          
-          # Check if public_html is included
-          if [[ ! "$FTP_STAGING_DIR" == *public_html* ]]; then
-            echo "NOTE: FTP_STAGING_DIR may need to include 'public_html' for most hosting providers"
-          fi
-          
-          if [[ ! "$FTP_CMS_STAGING_DIR" == *public_html* ]]; then
-            echo "NOTE: FTP_CMS_STAGING_DIR may need to include 'public_html' for most hosting providers"
-          fi
-          
-          echo "FTP_STAGING_DIR first character: ${FTP_STAGING_DIR:0:1}"
-          echo "FTP_STAGING_DIR last character: ${FTP_STAGING_DIR: -1}"
-          echo "FTP_CMS_STAGING_DIR first character: ${FTP_CMS_STAGING_DIR:0:1}"
-          echo "FTP_CMS_STAGING_DIR last character: ${FTP_CMS_STAGING_DIR: -1}"
-          
-          echo "Path format check complete."
-        env:
-          FTP_STAGING_DIR: ${{ secrets.FTP_STAGING_DIR }}
-          FTP_CMS_STAGING_DIR: ${{ secrets.FTP_CMS_STAGING_DIR }}
+          echo "Using staging FTP paths:"
+          echo "Main site staging: /public_html/staging/"
+          echo "CMS staging: /public_html/staging-cms/"
         
       - name: Validate FTP Configuration
         id: validate-sftp
@@ -117,8 +71,8 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
-          server-dir: ${{ secrets.FTP_STAGING_DIR }}
-          dangerous-clean-slate: true
+          server-dir: /public_html/staging/
+          dangerous-clean-slate: false
           
       - name: Deploy CMS to Hostinger via FTP (Staging)
         if: steps.validate-sftp.outputs.skip_deployment != 'true'
@@ -128,8 +82,8 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist-cms/
-          server-dir: ${{ secrets.FTP_CMS_STAGING_DIR }}
-          dangerous-clean-slate: true
+          server-dir: /public_html/staging-cms/
+          dangerous-clean-slate: false
           
       - name: Notify on success
         if: success() && env.SLACK_WEBHOOK_URL != ''
@@ -137,7 +91,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "✅ Staging deployment successful! Sites are live at ${{ secrets.STAGING_URL }} and ${{ secrets.CMS_STAGING_URL }}"
+              "text": "✅ Staging deployment successful! Sites are live at ${{ secrets.STAGING_URL }}/verify.html and ${{ secrets.CMS_STAGING_URL }}/verify.html"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL || '' }}

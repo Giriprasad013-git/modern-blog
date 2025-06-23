@@ -1,9 +1,12 @@
 name: Test FTP Connection
 
 on:
-    push:
-      branches: [ develop ]
-  
+  push:
+    branches: [ develop ]
+    paths:
+      - '.github/workflows/test-ftp.yml'
+  workflow_dispatch:  # This allows manual triggering from GitHub Actions tab
+
 jobs:
   test-ftp:
     name: Test FTP Connection
@@ -13,31 +16,18 @@ jobs:
       - name: Create test files
         run: |
           mkdir -p test-files
-          echo "This is a test file to diagnose FTP issues. Time: $(date)" > test-files/test.html
+          # Create a test HTML file
           echo "<!DOCTYPE html><html><head><title>Test Page</title></head><body><h1>Test Page</h1><p>This is a test page uploaded via GitHub Actions at $(date)</p></body></html>" > test-files/index.html
-          ls -la test-files/
-    
-      - name: Try root directory upload
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./test-files/
-          server-dir: /
-          dangerous-clean-slate: false
-      
-      - name: Try public_html upload
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./test-files/
-          server-dir: /public_html/
-          dangerous-clean-slate: false
           
-      - name: Try direct staging upload
+          # Create a test PHP file that shows environment info
+          echo "<?php phpinfo(); ?>" > test-files/info.php
+          
+          # Create a test file that outputs directory structure and permissions
+          echo "<?php echo '<pre>'; print_r(scandir('.')); echo '</pre>'; echo '<hr>'; echo 'Directory permissions: ' . substr(sprintf('%o', fileperms('.')), -4); ?>" > test-files/dir.php
+          
+          ls -la test-files/
+      
+      - name: Deploy to staging directory
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
