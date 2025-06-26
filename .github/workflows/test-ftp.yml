@@ -1,0 +1,38 @@
+name: Test FTP Connection
+
+on:
+  push:
+    branches: [ develop ]
+    paths:
+      - '.github/workflows/test-ftp.yml'
+  workflow_dispatch:  # This allows manual triggering from GitHub Actions tab
+
+jobs:
+  test-ftp:
+    name: Test FTP Connection
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Create test files
+        run: |
+          mkdir -p test-files
+          # Create a test HTML file
+          echo "<!DOCTYPE html><html><head><title>Test Page</title></head><body><h1>Test Page</h1><p>This is a test page uploaded via GitHub Actions at $(date)</p></body></html>" > test-files/index.html
+          
+          # Create a test PHP file that shows environment info
+          echo "<?php phpinfo(); ?>" > test-files/info.php
+          
+          # Create a test file that outputs directory structure and permissions
+          echo "<?php echo '<pre>'; print_r(scandir('.')); echo '</pre>'; echo '<hr>'; echo 'Directory permissions: ' . substr(sprintf('%o', fileperms('.')), -4); ?>" > test-files/dir.php
+          
+          ls -la test-files/
+      
+      - name: Deploy to staging directory
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./test-files/
+          server-dir: /public_html/staging/
+          dangerous-clean-slate: false 

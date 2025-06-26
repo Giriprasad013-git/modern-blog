@@ -5,7 +5,7 @@ This document provides instructions for deploying the Fast and Facts blog applic
 ## Setting Up GitHub Repository
 
 1. Create a new GitHub repository
-2. Push your code to the repository:
+2. Push your code to the repository: 
    ```bash
    # Using the setup script
    ./setup-remote.ps1 -Username "yourusername" -RepoName "modern-blog"
@@ -13,10 +13,10 @@ This document provides instructions for deploying the Fast and Facts blog applic
    # Or manually
    git remote add origin https://github.com/yourusername/modern-blog.git
    git push -u origin main
-   git push -u origin develop
+   git push -u origin develop  
    ```
 
-## Setting Up GitHub Secrets
+## Setting Up GitHub Secrets 
 
 For the CI/CD workflows to work properly, you need to set up the following secrets in your GitHub repository:
 
