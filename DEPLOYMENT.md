@@ -13,7 +13,7 @@ This document provides instructions for deploying the Fast and Facts blog applic
    # Or manually
    git remote add origin https://github.com/yourusername/modern-blog.git
    git push -u origin main
-   git push -u origin develop
+   git push -u origin develop  
    ```
 
 ## Setting Up GitHub Secrets 
