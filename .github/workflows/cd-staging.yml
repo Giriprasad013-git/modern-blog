@@ -12,10 +12,12 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
@@ -30,30 +32,72 @@ jobs:
           echo "VITE_APP_URL=${{ secrets.APP_URL }}" >> .env
           echo "VITE_APP_NAME=${{ secrets.APP_NAME }}" >> .env
 
-      - name: Build project
-        run: npm run build
-
-      - name: Deploy to Netlify
-        uses: netlify/actions/cli@master
+      - name: Build main site and CMS
+        run: npm run build:all
+        
+      # Create a simple file to verify deployment
+      - name: Create verification file
+        run: |
+          echo "<!DOCTYPE html><html><head><title>Staging Verification</title></head><body><h1>Staging Deployment Successful!</h1><p>This file confirms the staging deployment worked. Deployed at: $(date)</p></body></html>" > ./dist/verify.html
+          echo "<!DOCTYPE html><html><head><title>CMS Staging Verification</title></head><body><h1>CMS Staging Deployment Successful!</h1><p>This file confirms the CMS staging deployment worked. Deployed at: $(date)</p></body></html>" > ./dist-cms/verify.html
+        
+      # Enhanced debug info for FTP paths
+      - name: Validate FTP path format
+        run: |
+          echo "Using staging FTP paths:"
+          echo "Main site staging: /public_html/staging/"
+          echo "CMS staging: /public_html/staging-cms/"
+        
+      - name: Validate FTP Configuration
+        id: validate-sftp
+        run: |
+          if [ -z "$FTP_SERVER" ] || [ -z "$FTP_USERNAME" ] || [ -z "$FTP_PASSWORD" ]; then
+            echo "::warning::Missing FTP configuration. Skipping deployment."
+            echo "skip_deployment=true" >> $GITHUB_OUTPUT
+          else
+            echo "FTP configuration is valid."
+            echo "skip_deployment=false" >> $GITHUB_OUTPUT
+          fi
         env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_SITE_ID }}
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+
+      - name: Deploy main site to Hostinger via FTP (Staging)
+        if: steps.validate-sftp.outputs.skip_deployment != 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          args: deploy --dir=dist --prod
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: /public_html/staging/
+          dangerous-clean-slate: false
+          
+      - name: Deploy CMS to Hostinger via FTP (Staging)
+        if: steps.validate-sftp.outputs.skip_deployment != 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist-cms/
+          server-dir: /public_html/staging-cms/
+          dangerous-clean-slate: false
           
       - name: Notify on success
-        if: success()
+        if: success() && env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
             {
-              "text": "✅ Staging deployment successful! Site is live at ${{ secrets.STAGING_URL }}"
+              "text": "✅ Staging deployment successful! Sites are live at ${{ secrets.STAGING_URL }}/verify.html and ${{ secrets.CMS_STAGING_URL }}/verify.html"
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL || '' }}
           
       - name: Notify on failure
-        if: failure()
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
@@ -61,4 +105,4 @@ jobs:
               "text": "❌ Staging deployment failed! Check the logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL || '' }} 
