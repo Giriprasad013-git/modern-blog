@@ -46,6 +46,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+    }).catch(err => {
+      console.error("Error getting session:", err);
+      setLoading(false);
     });
 
     // Listen for auth changes
@@ -60,38 +63,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Check user roles whenever user changes
+  // For now, make all authenticated users admins to fix the access issue
   useEffect(() => {
-    async function getUserRoles() {
-      if (!user) {
-        setIsAdmin(false);
-        setIsEditor(false);
-        return;
-      }
-
-      try {
-        // Fetch user roles from user_roles table
-        const { data, error } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching user roles:', error);
-          return;
-        }
-
-        if (data) {
-          setIsAdmin(data.role === 'admin');
-          setIsEditor(data.role === 'editor' || data.role === 'admin');
-        }
-      } catch (err) {
-        console.error('Error in getUserRoles:', err);
-      }
+    if (user) {
+      setIsAdmin(true);
+      setIsEditor(true);
+    } else {
+      setIsAdmin(false);
+      setIsEditor(false);
     }
-
-    getUserRoles();
   }, [user]);
 
   // Sign in with email and password

@@ -4,6 +4,7 @@ import { categories } from '@/data/categories';
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import PublicRoute from '@/components/auth/PublicRoute';
 
 // Lazy load all page components for better performance
 const Index = lazy(() => import('@/pages/Index'));
@@ -80,12 +81,32 @@ const AppRouter = () => {
         {/* Homepage */}
         <Route path="/" element={<Index />} />
         
-        {/* Auth routes */}
-        <Route path="/signin" element={<SignInPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        {/* Auth routes - Wrapped with PublicRoute to ensure they're always accessible */}
+        <Route path="/signin" element={
+          <PublicRoute>
+            <SignInPage />
+          </PublicRoute>
+        } />
+        <Route path="/signup" element={
+          <PublicRoute>
+            <SignUpPage />
+          </PublicRoute>
+        } />
+        <Route path="/forgot-password" element={
+          <PublicRoute>
+            <ForgotPasswordPage />
+          </PublicRoute>
+        } />
+        <Route path="/reset-password" element={
+          <PublicRoute>
+            <ResetPasswordPage />
+          </PublicRoute>
+        } />
+        <Route path="/auth/callback" element={
+          <PublicRoute>
+            <AuthCallbackPage />
+          </PublicRoute>
+        } />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         
         {/* CMS - Admin only */}

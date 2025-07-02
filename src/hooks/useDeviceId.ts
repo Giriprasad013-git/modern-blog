@@ -1,20 +1,60 @@
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { supabase } from '@/lib/supabase';
 
 export const useDeviceId = () => {
   const [deviceId, setDeviceId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Try to get existing device ID from localStorage
-    let storedDeviceId = localStorage.getItem('device_id');
+    const setupDeviceId = async () => {
+      // First, check if user is authenticated with Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      
+      if (user) {
+        // If authenticated, use the user's ID as the device ID
+        setDeviceId(user.id);
+        // Still store in localStorage as a fallback
+        localStorage.setItem('device_id', user.id);
+        return;
+      }
+      
+      // If not authenticated, try to get existing device ID from localStorage
+      let storedDeviceId = localStorage.getItem('device_id');
+      
+      if (!storedDeviceId || !isValidDeviceId(storedDeviceId)) {
+        // Generate a new UUID-based device ID
+        storedDeviceId = generateDeviceId();
+        localStorage.setItem('device_id', storedDeviceId);
+      }
+      
+      setDeviceId(storedDeviceId);
+    };
     
-    if (!storedDeviceId || !isValidDeviceId(storedDeviceId)) {
-      // Generate a new UUID-based device ID
-      storedDeviceId = generateDeviceId();
-      localStorage.setItem('device_id', storedDeviceId);
-    }
+    setupDeviceId();
     
-    setDeviceId(storedDeviceId);
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const user = session?.user;
+      if (user) {
+        setDeviceId(user.id);
+        localStorage.setItem('device_id', user.id);
+      } else {
+        // Revert to stored device ID if logged out
+        const storedDeviceId = localStorage.getItem('device_id');
+        if (storedDeviceId && isValidDeviceId(storedDeviceId)) {
+          setDeviceId(storedDeviceId);
+        } else {
+          const newDeviceId = generateDeviceId();
+          localStorage.setItem('device_id', newDeviceId);
+          setDeviceId(newDeviceId);
+        }
+      }
+    });
+    
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Generate a proper UUID-based device ID

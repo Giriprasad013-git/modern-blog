@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function SignInPage() {
   const { theme, toggleTheme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -17,11 +17,23 @@ export default function SignInPage() {
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
   useEffect(() => {
-    // If user is already authenticated, redirect them
-    if (isAuthenticated) {
+    // Only redirect if authentication check is complete and user is authenticated
+    if (!loading && isAuthenticated) {
       navigate(from, { replace: true });
     }
-  }, [isAuthenticated, navigate, from]);
+  }, [isAuthenticated, navigate, from, loading]);
+
+  // Don't show anything while loading to prevent flashes
+  if (loading) {
+    return (
+      <div className={`min-h-screen ${theme === "dark" ? "dark" : ""}`}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+          <span className="ml-2">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen ${theme === "dark" ? "dark" : ""}`}>
